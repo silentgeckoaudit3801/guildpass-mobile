@@ -131,6 +131,29 @@ export function validatePinConfiguration(): {
   return { valid: errors.length === 0, errors };
 }
 
+
+export type PinningRuntimeEnvironment = "development" | "preview" | "production";
+
+/**
+ * Fail startup for non-development builds when certificate pinning is unsafe.
+ * Development keeps warning-only behavior so local placeholder pins do not
+ * block iteration, but preview/production builds must never ship silently with
+ * placeholder or empty pin sets.
+ */
+export function enforcePinConfigurationForEnvironment(
+  environment: PinningRuntimeEnvironment = appConfig.appEnv,
+): void {
+  const { valid, errors } = validatePinConfiguration();
+
+  if (valid || environment === "development") {
+    return;
+  }
+
+  throw new Error(
+    `[GuildPass Security] Certificate pinning misconfigured for ${environment} build: ${errors.join("; ")}`,
+  );
+}
+
 /**
  * Verify that a request URL is targeting a pinned domain.
  * This provides a JS-level guard: if the URL doesn't match a pinned domain,
