@@ -18,6 +18,7 @@ import { createEncryptedAsyncStoragePersister } from "../src/lib/encryptedPersis
 import { EncryptionService } from "../src/lib/encryptionService";
 import { KeyManager } from "../src/lib/keyManager";
 import { PERSISTED_QUERY_CACHE_KEY } from "../src/lib/offlineCache";
+import { enforcePinConfigurationForEnvironment } from "../src/features/security/certificatePinning";
 import {
   TEST_WALLET_ADDRESS,
   MEMBERSHIP_ACTIVE_FIXTURE,
@@ -154,5 +155,22 @@ describe("Security verification – tamper resistance (Req 1.6 / 6.2)", () => {
 
     // Verify the corrupted entry was proactively cleared.
     expect(await storage.getItem(PERSISTED_QUERY_CACHE_KEY)).toBeNull();
+  });
+});
+describe("Security verification - certificate pinning startup guard", () => {
+  it("throws in production when certificate pins are placeholders", () => {
+    expect(() => enforcePinConfigurationForEnvironment("production")).toThrow(
+      /Certificate pinning misconfigured for production build.*placeholder/i,
+    );
+  });
+
+  it("throws in preview when certificate pins are placeholders", () => {
+    expect(() => enforcePinConfigurationForEnvironment("preview")).toThrow(
+      /Certificate pinning misconfigured for preview build.*placeholder/i,
+    );
+  });
+
+  it("allows development builds to keep warning-only placeholder pin behavior", () => {
+    expect(() => enforcePinConfigurationForEnvironment("development")).not.toThrow();
   });
 });
