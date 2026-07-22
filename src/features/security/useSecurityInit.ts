@@ -23,7 +23,10 @@ import {
 } from "../features/security/deviceIntegrity";
 import { useSessionStore } from "../features/session/session.store";
 import { useIntegrityWarningStore } from "../features/security/integrityWarning.store";
-import {`n  enforcePinConfigurationForEnvironment,`n  logPinningStatus,`n} from "../features/security/certificatePinning";
+import {
+  enforcePinConfigurationForEnvironment,
+  logPinningStatus,
+} from "../features/security/certificatePinning";
 import { appConfig } from "../config/appConfig";
 
 /**
@@ -67,6 +70,7 @@ export function useSecurityInit(): void {
     }
 
     // -- Initialize secure fetch --
+    enforcePinConfigurationForEnvironment(appConfig.appEnv);
     initializeSecureFetch();
     logPinningStatus();
 
