@@ -23,7 +23,7 @@ import {
 } from "../features/security/deviceIntegrity";
 import { useSessionStore } from "../features/session/session.store";
 import { useIntegrityWarningStore } from "../features/security/integrityWarning.store";
-import { logPinningStatus } from "../features/security/certificatePinning";
+import {`n  enforcePinConfigurationForEnvironment,`n  logPinningStatus,`n} from "../features/security/certificatePinning";
 import { appConfig } from "../config/appConfig";
 
 /**
